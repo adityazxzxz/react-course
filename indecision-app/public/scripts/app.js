@@ -7,23 +7,32 @@ var templateOne = React.createElement(
     null,
     'This is JSX from app.jss'
 );
+
+var user = {
+    name: 'Aditya Pratamax',
+    age: 17,
+    location: 'Tangerang'
+};
+
 var templateTwo = React.createElement(
     'div',
     null,
     React.createElement(
         'h1',
         null,
-        'Aditya Pratama zxz'
+        user.name
     ),
     React.createElement(
         'p',
         null,
-        'Age:17'
+        'Age:',
+        user.age
     ),
     React.createElement(
         'p',
         null,
-        'Location:Tangerang'
+        'Location:',
+        user.location
     )
 );
 var appRoot = document.getElementById('app');
