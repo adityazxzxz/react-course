@@ -1,12 +1,13 @@
 class IndecisionApp extends React.Component {
     //constructor dengan bind agar fungsi diluar render bisa dipanggil
+    //constructor dengan props berfungsi untuk memanggil scope diluar class dan diluar render class itu sendiri
     constructor(props){
         super(props);
         this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
         this.handlePick = this.handlePick.bind(this);
         this.handleAddOption = this.handleAddOption.bind(this);
         this.state = {
-            options:[]
+            options:props.options
         }
 
     }
@@ -42,12 +43,11 @@ class IndecisionApp extends React.Component {
     }
 
     render(){
-        const title = 'Indecision';
         const subtitle = 'Put your life in the hands of a computer';
 
         return (
             <div>
-                <Header title={title} subtitle={subtitle}></Header>
+                <Header subtitle={subtitle}></Header>
                 <Action 
                     handlePick={this.handlePick}
                     hasOptions={this.state.options.length > 0}></Action>
@@ -62,6 +62,10 @@ class IndecisionApp extends React.Component {
     }
 }
 
+IndecisionApp.defaultProps = {
+    options:[]
+}
+
 
 //bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
 const Header = (props) => {
@@ -71,6 +75,11 @@ const Header = (props) => {
             <h2>{props.subtitle}</h2>
         </div>
     );
+}
+
+//title header menggunakan default dibawah ini apa bila props kosong dari class indecision
+Header.defaultProps = {
+    title:'Indecision'
 }
 
 
@@ -92,7 +101,7 @@ const Options = (props) => {
         <div>
             <button onClick={props.handleDeleteOptions}>Remove All</button>
             {
-                options.map((option) => <Option key={option} optionText={option}></Option>)
+                props.options.map((option) => <Option key={option} optionText={option}></Option>)
             }
         </div>
     );

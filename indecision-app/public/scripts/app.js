@@ -12,6 +12,7 @@ var IndecisionApp = function (_React$Component) {
     _inherits(IndecisionApp, _React$Component);
 
     //constructor dengan bind agar fungsi diluar render bisa dipanggil
+    //constructor dengan props berfungsi untuk memanggil scope diluar class dan diluar render class itu sendiri
     function IndecisionApp(props) {
         _classCallCheck(this, IndecisionApp);
 
@@ -21,7 +22,7 @@ var IndecisionApp = function (_React$Component) {
         _this.handlePick = _this.handlePick.bind(_this);
         _this.handleAddOption = _this.handleAddOption.bind(_this);
         _this.state = {
-            options: []
+            options: props.options
         };
 
         return _this;
@@ -63,13 +64,12 @@ var IndecisionApp = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var title = 'Indecision';
             var subtitle = 'Put your life in the hands of a computer';
 
             return React.createElement(
                 'div',
                 null,
-                React.createElement(Header, { title: title, subtitle: subtitle }),
+                React.createElement(Header, { subtitle: subtitle }),
                 React.createElement(Action, {
                     handlePick: this.handlePick,
                     hasOptions: this.state.options.length > 0 }),
@@ -85,10 +85,11 @@ var IndecisionApp = function (_React$Component) {
     return IndecisionApp;
 }(React.Component);
 
-//bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
+IndecisionApp.defaultProps = {
+    options: []
 
-
-var Header = function Header(props) {
+    //bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
+};var Header = function Header(props) {
     return React.createElement(
         'div',
         null,
@@ -103,6 +104,11 @@ var Header = function Header(props) {
             props.subtitle
         )
     );
+};
+
+//title header menggunakan default dibawah ini apa bila props kosong dari class indecision
+Header.defaultProps = {
+    title: 'Indecision'
 };
 
 var Action = function Action(props) {
@@ -128,7 +134,7 @@ var Options = function Options(props) {
             { onClick: props.handleDeleteOptions },
             'Remove All'
         ),
-        options.map(function (option) {
+        props.options.map(function (option) {
             return React.createElement(Option, { key: option, optionText: option });
         })
     );
