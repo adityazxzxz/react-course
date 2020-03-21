@@ -4,8 +4,9 @@ class IndecisionApp extends React.Component {
         super(props);
         this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
         this.handlePick = this.handlePick.bind(this);
+        this.handleAddOption = this.handleAddOption.bind(this);
         this.state = {
-            options:['Think one','Think two','Think three']
+            options:[]
         }
 
     }
@@ -24,6 +25,22 @@ class IndecisionApp extends React.Component {
         });
     }
 
+    handleAddOption(option){
+        if(!option){
+            return 'Enter valid value to add item';
+        }else if(this.state.options.indexOf(option) > -1){
+            //cek apakah didalam array sudah ada value tersebut
+            return 'This value already exists';
+        }
+
+        this.setState((prevState) => {
+            //menggabungkan state array option sebelumnya dengan value baru
+            return {
+                options:prevState.options.concat(option)
+            }
+        })
+    }
+
     render(){
         const title = 'Indecision';
         const subtitle = 'Put your life in the hands of a computer';
@@ -38,76 +55,85 @@ class IndecisionApp extends React.Component {
                     options={this.state.options} 
                     handleDeleteOptions={this.handleDeleteOptions}>
                 </Options>
-                <AddOption></AddOption>
+                <AddOption
+                    handleAddOption={this.handleAddOption}></AddOption>
             </div>
         );
     }
 }
 
-class Header extends React.Component {
-    render(){
-        const title = this.props.title;
-        const subtitle = this.props.subtitle;
-        return (
-            <div>
-                <h1>{title}</h1>
-                <h2>{subtitle}</h2>
-            </div>
-        );
-    }
+
+//bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
+const Header = (props) => {
+    return (
+        <div>
+            <h1>{props.title}</h1>
+            <h2>{props.subtitle}</h2>
+        </div>
+    );
 }
 
-class Action extends React.Component {
-    render(){
-        return (
-            <div>
-                <button 
-                    onClick={this.props.handlePick}
-                    disabled={!this.props.hasOptions}>What should i do?</button>
-            </div>
-        );
-    }
+
+
+const Action = (props) => {
+    return (
+        <div>
+            <button 
+                onClick={props.handlePick}
+                disabled={!props.hasOptions}>What should i do?</button>
+        </div>
+    );
 }
 
-class Options extends React.Component {
-    //note : konstruktor ini agar bisa akses props karena props hanya bisa diakses didalam fungsi render aja
-    render() {
-        const options = this.props.options;
-        return (
-            <div>
-                <button onClick={this.props.handleDeleteOptions}>Remove All</button>
-                {
-                    options.map((option) => <Option key={option} optionText={option}></Option>)
-                }
-            </div>
-        );
-    }
+
+
+const Options = (props) => {
+    return (
+        <div>
+            <button onClick={props.handleDeleteOptions}>Remove All</button>
+            {
+                options.map((option) => <Option key={option} optionText={option}></Option>)
+            }
+        </div>
+    );
 }
 
-class Option extends React.Component {
-    render() {
-        const key = this.props.key;
-        const text = this.props.optionText;
-        return (
-            <div>{text}</div>
-        );
-    }
+
+const Option = (props) => {
+    return (
+        <div>{props.optionText}</div>
+    );
 }
+
+
 
 class AddOption extends React.Component {
+    constructor(props){
+        super(props);
+        this.handleAddOption = this.handleAddOption.bind(this);
+        this.state = {
+            error:undefined
+        }
+    }
     handleAddOption(e){
         e.preventDefault();
         const option = e.target.option.value.trim();
-        if(option){
-            alert(option);
-        }
+        const error = this.props.handleAddOption(option);
+        this.setState(() => {
+            return {
+                error
+            }
+        })
     }
     render() {
         return (
-            <form onSubmit={this.handleAddOption}>
-                <input type="text" name="option" />
-                <button>Add Option</button>
-            </form>
+            <div>
+                {this.state.error && <p>{this.state.error}</p>}
+                <form onSubmit={this.handleAddOption}>
+                    <input type="text" name="option" />
+                    <button>Add Option</button>
+                </form>
+            </div>
         );
     }
 }
