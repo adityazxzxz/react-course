@@ -21,14 +21,53 @@ var IndecisionApp = function (_React$Component) {
         _this.handleDeleteOptions = _this.handleDeleteOptions.bind(_this);
         _this.handlePick = _this.handlePick.bind(_this);
         _this.handleAddOption = _this.handleAddOption.bind(_this);
+        _this.handleDeleteOption = _this.handleDeleteOption.bind(_this);
         _this.state = {
-            options: props.options
+            options: []
         };
 
         return _this;
     }
 
+    //dijalankan saat componen class ini dimounting
+
+
     _createClass(IndecisionApp, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            //pakai try catch biar ada error handlingnya. kondisi dibawah ini agar tidak muncul error
+            try {
+                var json = localStorage.getItem('options');
+                var options = JSON.parse(json);
+                this.setState(function () {
+                    return {
+                        options: options
+                    };
+                });
+                console.log('componentnDidMount');
+            } catch (e) {}
+        }
+
+        //dijalankan saat componen class ini ada update entah props atau state
+
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate(prevProps, prevState) {
+            if (prevState.options.length !== this.state.options.length) {
+                var json = JSON.stringify(this.state.options);
+                localStorage.setItem('options', json);
+            }
+            console.log('componenDidUpdate');
+        }
+
+        //dijalankan saat componen class ini diunmount / tidak lg dimunculkan
+
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            console.log('componenDidUnmount');
+        }
+    }, {
         key: 'handlePick',
         value: function handlePick() {
             var randomNum = Math.floor(Math.random() * this.state.options.length);
@@ -41,6 +80,17 @@ var IndecisionApp = function (_React$Component) {
             this.setState(function () {
                 return {
                     options: []
+                };
+            });
+        }
+    }, {
+        key: 'handleDeleteOption',
+        value: function handleDeleteOption(itemToDelete) {
+            this.setState(function (prevState) {
+                return {
+                    options: prevState.options.filter(function (item) {
+                        return item !== itemToDelete;
+                    })
                 };
             });
         }
@@ -75,7 +125,8 @@ var IndecisionApp = function (_React$Component) {
                     hasOptions: this.state.options.length > 0 }),
                 React.createElement(Options, {
                     options: this.state.options,
-                    handleDeleteOptions: this.handleDeleteOptions }),
+                    handleDeleteOptions: this.handleDeleteOptions,
+                    handleDeleteOption: this.handleDeleteOption }),
                 React.createElement(AddOption, {
                     handleAddOption: this.handleAddOption })
             );
@@ -85,11 +136,10 @@ var IndecisionApp = function (_React$Component) {
     return IndecisionApp;
 }(React.Component);
 
-IndecisionApp.defaultProps = {
-    options: []
+//bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
 
-    //bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
-};var Header = function Header(props) {
+
+var Header = function Header(props) {
     return React.createElement(
         'div',
         null,
@@ -134,8 +184,13 @@ var Options = function Options(props) {
             { onClick: props.handleDeleteOptions },
             'Remove All'
         ),
+        props.options.length === 0 && React.createElement(
+            'p',
+            null,
+            'Please add an option to get started!'
+        ),
         props.options.map(function (option) {
-            return React.createElement(Option, { key: option, optionText: option });
+            return React.createElement(Option, { key: option, optionText: option, handleDeleteOption: props.handleDeleteOption });
         })
     );
 };
@@ -144,7 +199,14 @@ var Option = function Option(props) {
     return React.createElement(
         'div',
         null,
-        props.optionText
+        props.optionText,
+        React.createElement(
+            'button',
+            { onClick: function onClick(e) {
+                    props.handleDeleteOption(props.optionText);
+                } },
+            'Remove'
+        )
     );
 };
 
@@ -174,6 +236,10 @@ var AddOption = function (_React$Component2) {
                     error: error
                 };
             });
+            //mereset input cursor jadi kosong setelah add option
+            if (!error) {
+                e.target.elements.option.value = '';
+            }
         }
     }, {
         key: 'render',

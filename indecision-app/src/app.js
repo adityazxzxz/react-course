@@ -6,10 +6,43 @@ class IndecisionApp extends React.Component {
         this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
         this.handlePick = this.handlePick.bind(this);
         this.handleAddOption = this.handleAddOption.bind(this);
+        this.handleDeleteOption = this.handleDeleteOption.bind(this);
         this.state = {
-            options:props.options
+            options:[]
         }
 
+    }
+    
+    //dijalankan saat componen class ini dimounting
+    componentDidMount(){
+        //pakai try catch biar ada error handlingnya. kondisi dibawah ini agar tidak muncul error
+        try{
+            const json = localStorage.getItem('options');
+            const options = JSON.parse(json);
+            this.setState(() => {
+                return {
+                    options:options
+                }
+            });
+            console.log('componentnDidMount');
+        }catch(e){
+
+        }
+        
+    }
+
+    //dijalankan saat componen class ini ada update entah props atau state
+    componentDidUpdate(prevProps,prevState){
+        if(prevState.options.length !== this.state.options.length){
+            const json = JSON.stringify(this.state.options);
+            localStorage.setItem('options',json)
+        }
+        console.log('componenDidUpdate');
+    }
+
+    //dijalankan saat componen class ini diunmount / tidak lg dimunculkan
+    componentWillUnmount(){
+        console.log('componenDidUnmount');
     }
 
     handlePick(){
@@ -24,6 +57,16 @@ class IndecisionApp extends React.Component {
                 options:[]
             }
         });
+    }
+
+    handleDeleteOption(itemToDelete){
+        this.setState((prevState) => {
+            return {
+                options:prevState.options.filter((item) => {
+                    return item !== itemToDelete;
+                })
+            }
+        })
     }
 
     handleAddOption(option){
@@ -53,7 +96,8 @@ class IndecisionApp extends React.Component {
                     hasOptions={this.state.options.length > 0}></Action>
                 <Options 
                     options={this.state.options} 
-                    handleDeleteOptions={this.handleDeleteOptions}>
+                    handleDeleteOptions={this.handleDeleteOptions}
+                    handleDeleteOption={this.handleDeleteOption}>
                 </Options>
                 <AddOption
                     handleAddOption={this.handleAddOption}></AddOption>
@@ -62,9 +106,6 @@ class IndecisionApp extends React.Component {
     }
 }
 
-IndecisionApp.defaultProps = {
-    options:[]
-}
 
 
 //bila sebuah component hanya untuk merender saja (tidak ada function didalam) cukup menggunakan seperti dibawha ini, tanpa menggunakan class
@@ -100,8 +141,9 @@ const Options = (props) => {
     return (
         <div>
             <button onClick={props.handleDeleteOptions}>Remove All</button>
+            {props.options.length === 0 && <p>Please add an option to get started!</p>}
             {
-                props.options.map((option) => <Option key={option} optionText={option}></Option>)
+                props.options.map((option) => <Option key={option} optionText={option} handleDeleteOption={props.handleDeleteOption}></Option>)
             }
         </div>
     );
@@ -110,7 +152,10 @@ const Options = (props) => {
 
 const Option = (props) => {
     return (
-        <div>{props.optionText}</div>
+        <div>
+        {props.optionText}
+        <button onClick={(e) => {props.handleDeleteOption(props.optionText)}}>Remove</button>
+        </div>
     );
 }
 
@@ -133,11 +178,16 @@ class AddOption extends React.Component {
                 error
             }
         })
+        //mereset input cursor jadi kosong setelah add option
+        if(!error){
+            e.target.elements.option.value = '';
+        }
     }
     render() {
         return (
             <div>
                 {this.state.error && <p>{this.state.error}</p>}
+                
                 <form onSubmit={this.handleAddOption}>
                     <input type="text" name="option" />
                     <button>Add Option</button>
