@@ -103,6 +103,7 @@ class IndecisionApp extends React.Component {
                 <Action 
                     handlePick={this.handlePick}
                     hasOptions={this.state.options.length > 0}></Action>
+                <div className="widget">
                 <Options 
                     options={this.state.options} 
                     handleDeleteOptions={this.handleDeleteOptions}
@@ -110,7 +111,8 @@ class IndecisionApp extends React.Component {
                 </Options>
                 <AddOption
                     handleAddOption={this.handleAddOption}>
-                </AddOption>
+                </AddOption>    
+                </div>
                 <OptionModal 
                     selectedOption={this.state.selectedOption}
                     handleCloseModal={this.handleCloseModal}>
