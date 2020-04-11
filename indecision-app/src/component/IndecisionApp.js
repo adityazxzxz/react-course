@@ -98,7 +98,8 @@ class IndecisionApp extends React.Component {
 
         return (
             <div>
-                <Header subtitle={subtitle}></Header>
+                <Header subtitle={subtitle} title="Indecision App"></Header>
+                <div className="container">
                 <Action 
                     handlePick={this.handlePick}
                     hasOptions={this.state.options.length > 0}></Action>
@@ -114,6 +115,7 @@ class IndecisionApp extends React.Component {
                     selectedOption={this.state.selectedOption}
                     handleCloseModal={this.handleCloseModal}>
                 </OptionModal>
+                </div>
             </div>
         );
     }
