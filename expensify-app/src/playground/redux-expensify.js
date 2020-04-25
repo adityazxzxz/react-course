@@ -167,27 +167,51 @@ const store = createStore(
     })
 )
 
+
+
+// 5. menampilkan data yang berubah
+
 store.subscribe(() => {
-    console.log(store.getState());
+    const state = store.getState();
+    const visibleExpense = getVisibleExpense(state.expenses, state.filters);
+    console.log(visibleExpense);
 });
+
+// data yang berubah diolah berdasarkan state filter
+const getVisibleExpense = (expenses, { text, sortBy, startDate, endDate}) => {
+    return expenses.filter((expense) => {
+        const startDateMatch = typeof startDate !== 'number' || expense.createdAt >= startDate;
+        const endDateMatch = typeof endDate !== 'number' || expense.createStore <= endDate;
+        const textMatch = expense.description.toLowerCase().includes(text.toLowerCase());
+        return startDateMatch && endDateMatch && textMatch;
+    }).sort(( a, b ) => {
+        if (sortBy === 'date'){
+            return a.createdAt < b.createdAt ? 1 : -1;
+        }else if(sortBy === 'amount'){
+            return a.amount < b.amount ? 1 : -1;
+        }
+    })
+}
+
+
 
 
 // 4. lakukan perubahan denan dispatch
 
-// const expensesOne = store.dispatch(addExpense({description:'Rent',amount:200}));
-// const expensesTwo = store.dispatch(addExpense({description:'Jajan',amount:300}));
+const expensesOne = store.dispatch(addExpense({description:'Rent',amount:200,createdAt:-1000}));
+const expensesTwo = store.dispatch(addExpense({description:'Jajan',amount:300,createdAt:-21000}));
 
 // store.dispatch(removeExpense({id:expensesOne.expenses.id}));
 // store.dispatch(editExpense(expensesTwo.expenses.id,{amount:5000}))
 
-// store.dispatch(setTextFilter('rent'));
+// store.dispatch(setTextFilter('jajan'));
 
 // store.dispatch(sortByAmount());
-// store.dispatch(sortByDate());
+ store.dispatch(sortByDate());
 
-store.dispatch(setStartDate(125));
-store.dispatch(setStartDate(100));
-store.dispatch(setEndDate(222));
+// store.dispatch(setStartDate(125));
+// store.dispatch(setStartDate(100));
+// store.dispatch(setEndDate(222));
 
 
 const demoState = {
