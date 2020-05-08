@@ -9,8 +9,8 @@ const AddExspensePage = (props) => {
         <div>
             <h1>Add Expense</h1>
             <ExpenseForm onSubmit={(callback) => {
-                console.log(callback)
                 props.dispatch(addExpense(callback))
+                props.history.push('/') //redirect
             }}/>
         </div>
     )
