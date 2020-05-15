@@ -1,4 +1,4 @@
-import { addExpense, editExpense } from '../../actions/expenses';
+import { addExpense, editExpense, removeExpense } from '../../actions/expenses';
 
 test('Add expense',() => {
     const expense = {
@@ -42,5 +42,13 @@ test('add expense default value',() => {
             createdAt:0,
             note:''
         }
+    })
+})
+
+test('remove expenses',() => {
+    const action = removeExpense({id:'123'});
+    expect(action).toEqual({
+        type:'REMOVE_EXPENSE',
+        id:'123'
     })
 })
